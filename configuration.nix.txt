@@ -12,7 +12,7 @@
 
   nix = {
     settings = {
-      substituters = [
+      substituters = [ 
         "https://mirrors.ustc.edu.cn/nix-channels/store"
         "https://cache.nixos.org"
       ];
@@ -59,18 +59,6 @@
     LC_TELEPHONE = "zh_CN.UTF-8";
     LC_TIME = "zh_CN.UTF-8";
   };
-
-    # Enable IBus for Chinese input
-    i18n.inputMethod = {
-      enabled = "ibus";
-      ibus.engines = with pkgs.ibus-engines; [
-        libpinyin
-        # You can add other input methods if needed:
-        # libpinyin # For拼音输入法
-        # sunpinyin # For SunPinyin
-        # cloudpinyin # For CloudPinyin
-      ];
-    };
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
@@ -124,9 +112,9 @@
     useUserPackages = true;
     users = {
       yangdi = { pkgs, ... }: {
+        # 用户软件包
         home.packages = with pkgs; [
           zsh
-          ibus-engines.libpinyin
         ];
 
         # 将现有的配置文件链接到 Home Manager
@@ -168,26 +156,22 @@
   # List packages installed in system profile.
   # To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [                                                                                                                                                                                                           
   #  vim # Do not forget to add an editor to edit configuration.nix!
   # The Nano editor is also installed by default.
   #  wget
-    vim
-    wget
-    pciutils
-    util-linux
-    procps
-    inetutils
-    tree
-    axel
-    nmap
-    arp-scan
-    git
-    tmux
-    fastfetch
-    # add Chinese input method
-    ibus
-    ibus-engines.libpinyin
+    pkgs.vim
+    pkgs.wget
+    pkgs.pciutils
+    pkgs.util-linux
+    pkgs.procps
+    pkgs.inetutils
+    pkgs.tree
+    pkgs.axel
+    pkgs.nmap
+    pkgs.arp-scan
+    pkgs.git
+    pkgs.tmux
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

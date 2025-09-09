@@ -51,3 +51,4 @@ export PATH="$HOME/.local/bin:$PATH"
 PROMPT="%F{red}%m%%%f "
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fastfetch
