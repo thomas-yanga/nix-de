@@ -48,7 +48,7 @@ export PATH="$HOME/.local/bin:$PATH"
 #export LANG="C.utf8"
 #export LC_NUMERIC="zh_CN.utf8"
 
-PROMPT="%F{red}%m%%%f "
+PROMPT="%F{yellow}%m%%%f "
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fastfetch

@@ -30,19 +30,13 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  #  systemd.sleep.enable = false;
-
   networking.hostName = "nix-de"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.networkmanager.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
-  networking.networkmanager.enable = true;
-
-  # Set your time zone.
   time.timeZone = "Asia/Shanghai";
 
   # Select internationalisation properties.
@@ -60,16 +54,34 @@
     LC_TIME = "zh_CN.UTF-8";
   };
 
+  # 中文显示字体配置
+  fonts = {
+    fonts = with pkgs; [
+      # 中文字体：文泉驿系列是 NixOS 自带的好选择
+      wqy_zenhei
+      wqy_microhei
+      # Noto 字体家族（包含中文），推荐安装
+      noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
+      # 更现代的中文字体可选（如果需要）
+      # sarasa-gothic # 更纱黑体
+    ];
+
+    fontconfig = {
+      defaultFonts = {
+        # 设置默认字体顺序，优先使用英文字体，再回退到中文字体
+        serif = [ "Noto Serif" "DejaVu Serif" "WenQuanYi Zen Hei" ];
+        sansSerif = [ "Noto Sans" "DejaVu Sans" "WenQuanYi Zen Hei" ];
+        monospace = [ "Cascadia Mono NF" "DejaVu Sans Mono" "WenQuanYi Zen Hei" ];
+      };
+    };
+  };
+
     # Enable IBus for Chinese input
     i18n.inputMethod = {
       enabled = "ibus";
-      ibus.engines = with pkgs.ibus-engines; [
-        libpinyin
-        # You can add other input methods if needed:
-        # libpinyin # For拼音输入法
-        # sunpinyin # For SunPinyin
-        # cloudpinyin # For CloudPinyin
-      ];
+      ibus.engines = with pkgs.ibus-engines; [ libpinyin ];
     };
 
   # Enable the X11 windowing system.
@@ -123,10 +135,13 @@
   home-manager = {
     useUserPackages = true;
     users = {
-      yangdi = { pkgs, ... }: {
+      yangdi = { pkgs, unstable, ... }: {
         home.packages = with pkgs; [
           zsh
           ibus-engines.libpinyin
+          #unstable.wechat-uos
+          #unstable.feishu
+          gnome-terminal
         ];
 
         # 将现有的配置文件链接到 Home Manager
@@ -137,11 +152,13 @@
         home.file.".tmux.conf".source = ./dotfiles/.tmux.conf;
 
         # home-manager 会话管理
-        programs.zsh = {
-          enable = true;
-        };
-        programs.tmux = {
-          enable = true;
+        programs.zsh.enable = true;
+        programs.tmux.enable = true;
+
+        home.sessionVariables = {
+          GTK_IM_MODULE = "ibus";
+          QT_IM_MODULE = "ibus";
+          XMODIFIERS = "@im=ibus";
         };
 
         home.stateVersion = "25.05";
@@ -153,10 +170,9 @@
   users.users.yangdi = {
     isNormalUser = true;
     home = "/home/yangdi";
-    description = "yangdi";
+    description = "Yangdi";
     extraGroups = [ "networkmanager" "wheel"];
     shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = [ ];
   };
 
   # Install firefox.
@@ -188,6 +204,10 @@
     # add Chinese input method
     ibus
     ibus-engines.libpinyin
+    cascadia-code
+    #unstable.wechat-uos
+    #unstable.feishu
+    gnome-terminal
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -214,16 +234,16 @@
   networking.firewall = {
     enable = true;
    # allowedTCPPorts = [2233];
-    
+
    # extraCommands = ''
     # create nixos-fw table
    # nft add table inet nixos-fw 2>/dev/null || true
     # 使用 nft 的完整路径
    # ${pkgs.nftables}/bin/nft delete chain inet nixos-fw output 2>/dev/null || true
-    
+
     # 设置 OUTPUT 链默认策略为 DROP
    # ${pkgs.nftables}/bin/nft add chain inet nixos-fw output { type filter hook output priority 0 \; policy drop \; }
-    
+
     # 添加允许规则
    # ${pkgs.nftables}/bin/nft add rule inet nixos-fw output ip daddr 127.0.0.1 counter accept
    # ${pkgs.nftables}/bin/nft add rule inet nixos-fw output ip daddr 172.18.23.207 counter accept
