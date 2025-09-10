@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration with USTC mirrors";
+  description = "NixOS configuration with mirrors";
 
   inputs = {
     #nixpkgs.url = "https://githubfast.com/NixOS/nixpkgs/archive/nixos-25.05.tar.gz";
@@ -17,31 +17,41 @@
     nixpkgs.url = "file:///home/yangdi/nixos-config/tmp/nixpkgs-nixos-25.05.tar.gz";
     nixpkgs-unstable.url = "file:///home/yangdi/nixos-config/tmp/nixos-unstable.tar.gz";
     home-manager.url = "file:///home/yangdi/nixos-config/tmp/home-manager-release-25.05.tar.gz";
+    # Make home-manager use the same nixpkgs as the system
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
 outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }:
     let
+      # System architecture
       system = "x86_64-linux";
-      # 创建 unstable pkgs 实例，允许非自由软件
+
+      # Import unstable channel with unfree packages allowed
       unstable = import nixpkgs-unstable {
         inherit system;
         config.allowUnfree = true;
       };
     in
     {
+      # NixOS configuration for host "nix-de"
       nixosConfigurations = {
         "nix-de" = nixpkgs.lib.nixosSystem {
           inherit system;
-          # 将 unstable 作为特殊参数传递
+
+          # Pass unstable package set as a special argument
           specialArgs = { inherit unstable; };
+
           modules = [
+            # Main system configuration
             ./configuration.nix
+
+            # Home Manager integration
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              # 也将 unstable 传递给 home-manager
+
+              # Pass unstable package set to home-manager
               home-manager.extraSpecialArgs = { inherit unstable; };
             }
           ];
