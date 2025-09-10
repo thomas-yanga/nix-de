@@ -2,9 +2,9 @@
   description = "NixOS configuration with mirrors";
 
   inputs = {
-    #nixpkgs.url = "https://githubfast.com/NixOS/nixpkgs/archive/nixos-25.05.tar.gz";
+    #nixpkgs.url = "git+https://githubfast.com/NixOS/nixpkgs.gitref=nixos-25.05";
     #nixpkgs-unstable.url = "https://githubfast.com/NixOS/nixpkgs/nixos-unstable";
-    #home-manager.url = "https://githubfast.com/nix-community/home-manager/archive/release-25.05.tar.gz";
+    #home-manager.url = "git+https://githubfast.com/nix-community/home-manager.git?ref=nixos-25.05";
 
     #nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     #nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";

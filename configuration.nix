@@ -130,11 +130,11 @@
       extraPackages = with pkgs; [
       i3status  # status bar for time, battery, net
       i3lock    # screenlock tool
-      dmenu     # i3 initiator, hot key alt+D
+      ibus
+      ibus-engines.libpinyin
       ];
       extraSessionCommands = ''
       # auto start alacritty after longin i3
-      #exec alacritty
       gnome-terminal &
 
       # auto start i3 status bar tool
@@ -144,6 +144,9 @@
       export GTK_IM_MODULE=ibus
       export QT_IM_MODULE=ibus
       export XMODIFIERS=@im=ibus
+
+      # Start ibus daemon with proper settings
+      ibus-daemon --daemonize --xim --replace &
     '';
       configFile = "/home/yangdi/.config/i3/config";  # enable config file
     };
@@ -152,6 +155,7 @@
     xkb = {
       layout = "us";
       variant = "";
+      options = "grp:alt_shift_toggle";  # Toggle with Alt+Shift
     };
   };
 
@@ -225,6 +229,28 @@
     # config tool
     dconf
   ];
+
+  ############################################################################
+  # Wrap with apps
+  ############################################################################
+  environment.extraInit = ''
+  # Wrap Firefox to include IBus input method variables
+    if [ -x "${pkgs.firefox}/bin/firefox" ]; then
+      ${pkgs.makeWrapper}/bin/wrapProgram "${pkgs.firefox}/bin/firefox" \
+        --set GTK_IM_MODULE "ibus" \
+        --set QT_IM_MODULE "ibus" \
+        --set XMODIFIERS "@im=ibus"
+    fi
+
+  # Add gnome-terminal wrap (new code)
+    if [ -x "${pkgs.gnome-terminal}/bin/gnome-terminal" ]; then
+      ${pkgs.makeWrapper}/bin/wrapProgram "${pkgs.gnome-terminal}/bin/gnome-terminal" \
+        --set GTK_IM_MODULE "ibus" \
+        --set QT_IM_MODULE "ibus" \
+        --set XMODIFIERS "@im=ibus" \
+        --set LANG "zh_CN.UTF-8"  # Ensure terminal uses Chinese locale
+    fi
+  '';
 
   ############################################################################
   # Program Enablement
