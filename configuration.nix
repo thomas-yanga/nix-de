@@ -13,11 +13,11 @@
   nix = {
     settings = {
       substituters = [
-        "https://mirrors.ustc.edu.cn/nix-channels/store"
+        "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
         "https://cache.nixos.org"
       ];
       trusted-public-keys = [
-        "mirrors.ustc.edu.cn-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "mirrors.tuna.tsinghua.edu.cn-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       ];
     };
@@ -56,7 +56,7 @@
 
   # 中文显示字体配置
   fonts = {
-    fonts = with pkgs; [
+    packages = with pkgs; [
       # 中文字体：文泉驿系列是 NixOS 自带的好选择
       wqy_zenhei
       wqy_microhei
@@ -80,7 +80,7 @@
 
     # Enable IBus for Chinese input
     i18n.inputMethod = {
-      enabled = "ibus";
+      type = "ibus";
       ibus.engines = with pkgs.ibus-engines; [ libpinyin ];
     };
 
