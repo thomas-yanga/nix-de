@@ -124,6 +124,30 @@
     displayManager.gdm.enable = true;
     desktopManager.gnome.enable = true;
 
+    # add i3 and i3 additional tools
+    windowManager.i3 = {
+      enable = true;
+      extraPackages = with pkgs; [
+      i3status  # status bar for time, battery, net
+      i3lock    # screenlock tool
+      dmenu     # i3 initiator, hot key alt+D
+      ];
+      extraSessionCommands = ''
+      # auto start alacritty after longin i3
+      #exec alacritty
+      gnome-terminal &
+
+      # auto start i3 status bar tool
+      i3status &
+
+      # input method variables
+      export GTK_IM_MODULE=ibus
+      export QT_IM_MODULE=ibus
+      export XMODIFIERS=@im=ibus
+    '';
+      configFile = "/home/yangdi/.config/i3/config";  # enable config file
+    };
+
     # Keyboard layout configuration
     xkb = {
       layout = "us";
@@ -194,6 +218,12 @@
     # Miscellaneous
     fastfetch
     gnome-terminal
+
+    # i3 initialtor
+    rofi
+
+    # config tool
+    dconf
   ];
 
   ############################################################################
