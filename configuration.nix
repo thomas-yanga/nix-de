@@ -103,13 +103,6 @@
       noto-fonts-cjk-sans
       noto-fonts-cjk-serif
     ];
-
-    # Configure font fallback preferences
-    fontconfig.defaultFonts = {
-      serif = [ "Noto Serif" "DejaVu Serif" "WenQuanYi Zen Hei" ];
-      sansSerif = [ "Noto Sans" "DejaVu Sans" "WenQuanYi Zen Hei" ];
-      monospace = [ "Cascadia Mono NF" "DejaVu Sans Mono" "WenQuanYi Zen Hei" ];
-    };
   };
 
   ############################################################################
@@ -127,28 +120,28 @@
     # add i3 and i3 additional tools
     windowManager.i3 = {
       enable = true;
-      extraPackages = with pkgs; [
-      i3status  # status bar for time, battery, net
-      i3lock    # screenlock tool
-      ibus
-      ibus-engines.libpinyin
-      ];
-      extraSessionCommands = ''
+      #extraPackages = with pkgs; [
+      #i3status  # status bar for time, battery, net
+      #i3lock    # screenlock tool
+      #ibus
+      #ibus-engines.libpinyin
+      #];
+      #extraSessionCommands = ''
       # auto start alacritty after longin i3
-      gnome-terminal &
+      #gnome-terminal &
 
       # auto start i3 status bar tool
-      i3status &
+      #i3status &
 
       # input method variables
-      export GTK_IM_MODULE=ibus
-      export QT_IM_MODULE=ibus
-      export XMODIFIERS=@im=ibus
+      #export GTK_IM_MODULE=ibus
+      #export QT_IM_MODULE=ibus
+      #export XMODIFIERS=@im=ibus
 
       # Start ibus daemon with proper settings
-      ibus-daemon --daemonize --xim --replace &
-    '';
-      configFile = "/home/yangdi/.config/i3/config";  # enable config file
+      #ibus-daemon --daemonize --xim --replace &
+      #'';
+      #configFile = "/home/yangdi/.config/i3/config";  # enable config file
     };
 
     # Keyboard layout configuration
@@ -196,38 +189,41 @@
   ############################################################################
 
   environment.systemPackages = with pkgs; [
+    pciutils util-linux procps inetutils nmap arp-scan axel dconf
+
     # Essential utilities
-    vim
-    wget
-    git
-    tmux
-    tree
+    #vim
+    #wget
+    #git
+    #tmux
+    #tree
 
     # System monitoring tools
-    pciutils
-    util-linux
-    procps
-    inetutils
+    #pciutils
+    #util-linux
+    #procps
+    #inetutils
 
     # Network tools
-    nmap
-    arp-scan
-    axel
+    #nmap
+    #arp-scan
+    #axel
+    #lftp
 
     # Input method and fonts
-    ibus
-    ibus-engines.libpinyin
-    cascadia-code
+    #ibus
+    #ibus-engines.libpinyin
+    #cascadia-code
 
     # Miscellaneous
-    fastfetch
-    gnome-terminal
+    #fastfetch
+    #gnome-terminal
 
     # i3 initialtor
-    rofi
+    #rofi
 
     # config tool
-    dconf
+    #dconf
   ];
 
   ############################################################################
@@ -272,15 +268,27 @@
     useUserPackages = true;
     users.yangdi = { pkgs, unstable, ... }: {
       home.packages = with pkgs; [
-        zsh
-        ibus-engines.libpinyin
-        gnome-terminal
+        # Essential user tools
+        vim tmux git tree fastfetch
+        # i3 ecosystem
+        i3status i3lock rofi gnome-terminal
+        # Input method
+        ibus ibus-engines.libpinyin
+        # Network/tools
+        lftp
+        # Fonts (user-level fonts—system fonts stay in configuration.nix)
+        cascadia-code wqy_zenhei noto-fonts-cjk-sans
+        # i3 related
+        i3status i3lock ibus i3status
       ];
 
       # Import dotfiles from the repository
       home.file.".vimrc".source = ./dotfiles/.vimrc;
       home.file.".zshrc".source = ./dotfiles/.zshrc;
       home.file.".tmux.conf".source = ./dotfiles/.tmux.conf;
+      home.file.".config/i3status/config".source = /home/yangdi/nixos-config/dotfiles/i3status/config;
+      home.file.".config/rofi/config.rasi".source = /home/yangdi/nixos-config/dotfiles/rofi/config.rasi;
+      home.file.".config/ibus/ibus.conf".source  = /home/yangdi/nixos-config/dotfiles/ibus/ibus.conf;
 
       # Enable programs managed by home-manager
       programs.zsh.enable = true;
@@ -291,6 +299,34 @@
         GTK_IM_MODULE = "ibus";
         QT_IM_MODULE = "ibus";
         XMODIFIERS = "@im=ibus";
+      };
+
+      # Startup commands
+      xsession.initExtra = ''
+        # Start gnome-terminal (use --no-startup-id to avoid i3 warnings)
+        exec --no-startup-id gnome-terminal &
+        # Start i3status (ibus-daemon is auto-started by Home Manager’s ibus module)
+        exec --no-startup-id i3status &
+      '';
+
+      # Auto-start ibus-daemon
+      #programs.ibus = {
+      #  enable = true;
+      #  engines = with pkgs.ibus-engines; [ libpinyin ];
+      #  package = pkgs.ibus;
+      #};
+
+     # User-level fontconfig (replaces system’s fonts.fontconfig.defaultFonts)
+       fonts = {
+        fontconfig = {
+          enable = true;
+          defaultFonts = {
+            serif = [ "Noto Serif" "WenQuanYi Zen Hei" ];
+            sansSerif = [ "Noto Sans" "WenQuanYi Zen Hei" ];
+            monospace = [ "Cascadia Mono NF" "WenQuanYi Zen Hei" ];  # Your preferred monospace font
+          };
+
+        };
       };
 
       home.stateVersion = "25.05";

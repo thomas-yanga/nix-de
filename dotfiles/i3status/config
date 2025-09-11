@@ -1,0 +1,29 @@
+general {
+colors = true
+color_good = "#a3be8c"
+color_degraded = "#ebcb8b"
+color_bad = "#bf616a"
+interval = 1
+separator = "|"
+}
+
+order += "disk /"
+order += "cpu_usage"
+order += "memory"
+order += "tztime local"
+
+disk "/" {
+format = "/: %percentage_used"
+}
+
+cpu_usage {
+format = "CPU: %usage"
+}
+
+memory {
+format = "Memory: %used/%total"
+}
+
+tztime local {
+format = "%Y-%m-%d %H:%M:%S"
+}

@@ -1,0 +1,6 @@
+# Enable passive mode (default in lftp, but explicit setting ensures it)
+set ftp:passive-mode yes
+
+# Optional: Set passive port range to work with firewall rules
+# If your NixOS firewall restricts outbound ports, define a range here
+set ftp:passive-port-range 49152-65535
