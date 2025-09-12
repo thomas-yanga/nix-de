@@ -92,7 +92,6 @@
     # Configure GNOME desktop environment (KEEP)
     displayManager.gdm.enable = true;
     desktopManager.gnome.enable = true;
-    # Remove ALL i3-related configurations
     # Keyboard layout configuration (keep existing for consistency)
     xkb = {
       layout = "us";
@@ -130,47 +129,11 @@
   # System Packages (Remove i3-related tools)
   ############################################################################
   environment.systemPackages = with pkgs; [
-    pciutils util-linux procps inetutils nmap arp-scan axel dconf
-    # Essential utilities (uncomment commonly used ones as needed)
-    # vim
-    # wget
-    # git
-    # tmux
-    # tree
-    # Network tools
-    # lftp
-    # Miscellaneous
-    # fastfetch
-    # gnome-terminal (GNOME default terminal, optional to keep here)
+    pciutils util-linux procps inetutils nmap arp-scan axel dconf htop
   ];
-  ############################################################################
-  # Wrap with apps (Keep IBus wrapping for input method)
-  ############################################################################
-  #environment.extraInit = ''
-  #  # Wrap Firefox to include IBus input method variables
-  #  if [ -x "${pkgs.firefox}/bin/firefox" ]; then
-  #    ${pkgs.makeWrapper}/bin/wrapProgram "${pkgs.firefox}/bin/firefox" \
-  #      --set GTK_IM_MODULE "ibus" \
-  #      --set QT_IM_MODULE "ibus" \
-  #      --set XMODIFIERS "@im=ibus"
-  #  fi
-  #  # Wrap gnome-terminal to include IBus and Chinese locale
-  #  if [ -x "${pkgs.gnome-terminal}/bin/gnome-terminal" ]; then
-  #    ${pkgs.makeWrapper}/bin/wrapProgram "${pkgs.gnome-terminal}/bin/gnome-terminal" \
-  #      --set GTK_IM_MODULE "ibus" \
-  #      --set QT_IM_MODULE "ibus" \
-  #      --set XMODIFIERS "@im=ibus" \
-  #      --set LANG "zh_CN.UTF-8"  # Ensure terminal uses Chinese locale
-  #  fi
-  #'';
-  ############################################################################
-  # Program Enablement
-  ############################################################################
   programs = {
     # Enable Zsh shell
     zsh.enable = true;
-    # Enable Firefox browser
-    firefox.enable = true;
   };
   ############################################################################
   # Home Manager Configuration (Remove i3, Keep Chinese Input)
@@ -181,8 +144,6 @@
       home.packages = with pkgs; [
         # Essential user tools (keep non-i3 tools)
         vim tmux git tree fastfetch
-        # GNOME-related (optional, gnome-terminal is default in GNOME)
-        gnome-terminal
         # Chinese Input Method (KEEP)
         ibus ibus-engines.libpinyin
         # Network tools
@@ -194,7 +155,6 @@
       home.file.".vimrc".source = ./dotfiles/.vimrc;
       home.file.".zshrc".source = ./dotfiles/.zshrc;
       home.file.".tmux.conf".source = ./dotfiles/.tmux.conf;
-      # Remove i3-related dotfiles: .config/i3status, .config/rofi
       # Keep IBus dotfile for input method
       #home.file.".config/ibus/ibus.conf".source = /home/yangdi/nixos-config/dotfiles/ibus/ibus.conf;
       # Enable programs managed by home-manager
@@ -206,11 +166,6 @@
         QT_IM_MODULE = "ibus";
         XMODIFIERS = "@im=ibus";
       };
-      # Startup commands (remove i3-related, keep GNOME-compatible)
-      #xsession.initExtra = ''
-      #  # Optional: Auto-start gnome-terminal (GNOME can manage via Startup Applications)
-      #  # exec --no-startup-id gnome-terminal &
-      #'';
       # User-level fontconfig (keep for consistent font rendering)
       fonts = {
         fontconfig = {
