@@ -44,6 +44,7 @@
     # Firewall configuration
     firewall = {
       enable = true;
+      allowedTCPPorts = [ 3000 9090 9100 ];
     };
   };
   ############################################################################
@@ -84,7 +85,7 @@
     ];
   };
   ############################################################################
-  # Desktop Environment Configuration (GNOME Only, Remove i3)
+  # Desktop Environment Configuration (GNOME Only)
   ############################################################################
   services.xserver = {
     # Enable X11 windowing system
@@ -98,6 +99,62 @@
       variant = "";
       options = "grp:alt_shift_toggle";  # Toggle with Alt+Shift
     };
+  };
+  ############################################################################
+  # prometheus and grafana
+  ############################################################################
+  services.prometheus = {
+    enable = true;
+    port = 9090;
+    scrapeConfigs = [
+      {
+        job_name = "me_p_service";
+        static_configs = [{ targets = [ "127.0.0.1:9090" ]; }];
+      }
+      {
+        job_name = "me_sys";
+        static_configs = [{ targets = [ "127.0.0.1:9100" ]; }];
+      }
+    ];
+  };
+  # exportter services for prometheus
+  services.prometheus.exporters.node = {
+    enable = true;
+    port = 9100;
+    enabledCollectors = [
+      "systemd"
+      "cpu"
+      "diskstats"
+      "filesystem"
+      "loadavg"
+      "meminfo"
+      "netdev"
+      "netstat"
+      "stat"
+    ];
+    openFirewall = true;
+  };
+  # grafana settings
+  services.grafana = {
+    enable = true;
+    settings = {
+      server = {
+        http_addr = "0.0.0.0";
+        http_port = 3000;
+        domain = "localhost";
+      };
+    };
+    #provision.datasources.settings = {
+    #  datasources = [
+    #    {
+    #      name = "Prometheus";
+    #      type = "prometheus";
+    #      url = "http://127.0.0.1:9090";
+    #      isDefault = true;
+    #      access = "direct";
+    #    }
+    #  ];
+    #};
   };
   ############################################################################
   # Audio Configuration
